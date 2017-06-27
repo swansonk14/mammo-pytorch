@@ -102,8 +102,9 @@ def main():
     cudnn.benchmark = True
 
     # Data loading code
-    traindir = os.path.join(args.data, 'train')
-    valdir = os.path.join(args.data, 'val')
+    metadata = json.load(open(args.metadata, 'r'))
+    train_metadata = filter(lambda x: x['split_group'] == 'train', metadata)
+    val_metadata = filter(lambda x: x['split_group'] == 'test', metadata)
     normalize = transforms.Normalize(mean=[46.5584534313],
                                      std=[36.8535621221])
 
@@ -112,8 +113,7 @@ def main():
             transforms.Scale(256),
             transforms.ToTensor(),
             normalize,
-        ])),
-        target_string=args.target_string,
+        ]), target_string=args.target_string),
         batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers, pin_memory=True)
 
@@ -122,8 +122,7 @@ def main():
             transforms.Scale(256),
             transforms.ToTensor(),
             normalize,
-        ])),
-        target_string=args.target_string,
+        ]), target_string=args.target_string),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
 
